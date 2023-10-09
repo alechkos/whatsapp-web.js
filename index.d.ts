@@ -348,6 +348,11 @@ declare namespace WAWebJS {
 
         /** Emitted when the RemoteAuth session is saved successfully on the external Database */
         on(event: 'remote_session_saved', listener: () => void): this
+
+        /** Emitted when the poll vote is received */
+        on(event: 'vote_received', listener: (
+            vote: PollVote
+        ) => void): this
     }
 
     /** Current connection information */
@@ -678,6 +683,7 @@ declare namespace WAWebJS {
         PROTOCOL = 'protocol',
         REACTION = 'reaction',
         TEMPLATE_BUTTON_REPLY = 'template_button_reply',
+        POLL_CREATION = 'poll_creation',
     }
 
     /** Client status */
@@ -837,6 +843,11 @@ declare namespace WAWebJS {
         selectedRowId?: string,
         /** Returns message in a raw format */
         rawData: object,
+        pollName: string,
+        /** Avaiaible poll voting options */
+        pollOptions: string[],
+        /** False for a single choice poll, true for a multiple choice poll */
+        allowMultipleAnswers: boolean,
         /* 
         * Reloads this Message object's data in-place with the latest values from WhatsApp Web. 
         * Note that the Message must still be in the web app cache for this to work, otherwise will return null.
@@ -915,6 +926,45 @@ declare namespace WAWebJS {
         options?: LocationSendOptions;
         
         constructor(latitude: number, longitude: number, options?: LocationSendOptions)
+    }
+
+    /** Poll send options */
+    export interface PollSendOptions {
+        /** False for a single choice poll, true for a multiple choice poll (false by default) */
+        allowMultipleAnswers?: boolean
+    }
+
+    /** Represents a Poll on WhatsApp */
+    export class Poll {
+        pollName: string
+        pollOptions: Array<Object<string, number>>
+        options: PollSendOptions
+
+        constructor(pollName: string, pollOptions: Array<string>, options: PollSendOptions)
+    }
+
+    /** Represents a Poll Vote on WhatsApp */
+    export interface PollVote {
+        /** The selected poll option */
+        selectedOption: SelectedPollOption;
+
+        /** The person who voted */
+        voter: string;
+
+        /** Timestamp the the poll was voted */
+        senderTimestampMs: number;
+
+        /** The poll creation message associated with the poll vote */
+        parentMessage: Message;
+    }
+
+    /** Selected poll option structure */
+    export interface SelectedPollOption {
+        /** The local selected option ID */
+        id: number;
+
+        /** The option name */
+        name: string;
     }
 
     export interface Label {
@@ -1008,7 +1058,7 @@ declare namespace WAWebJS {
         static fromUrl: (url: string, options?: MediaFromURLOptions) => Promise<MessageMedia>
     }
 
-    export type MessageContent = string | MessageMedia | Location | Contact | Contact[] | List | Buttons
+    export type MessageContent = string | MessageMedia | Location | Poll | Contact | Contact[] | List | Buttons
 
     /**
      * Represents a Contact on WhatsApp

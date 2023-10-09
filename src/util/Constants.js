@@ -64,7 +64,8 @@ exports.Events = {
     STATE_CHANGED: 'change_state',
     BATTERY_CHANGED: 'change_battery',
     INCOMING_CALL: 'call',
-    REMOTE_SESSION_SAVED: 'remote_session_saved'
+    REMOTE_SESSION_SAVED: 'remote_session_saved',
+    VOTE_RECEIVED: 'vote_received'
 };
 
 /**
@@ -108,6 +109,7 @@ exports.MessageTypes = {
     PROTOCOL: 'protocol',
     REACTION: 'reaction',
     TEMPLATE_BUTTON_REPLY: 'template_button_reply',
+    POLL_CREATION: 'poll_creation',
 };
 
 /**
