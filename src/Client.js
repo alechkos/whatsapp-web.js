@@ -440,23 +440,18 @@ class Client extends EventEmitter {
 
         let last_message;
 
-        await page.exposeFunction('onChangeMessageTypeEvent', (msg) => {
-
+        await page.exposeFunction('onChangeMessageTypeEvent', (msg, revokedMsgId) => {
             if (msg.type === 'revoked') {
                 const message = new Message(this, msg);
-                let revoked_msg;
-                if (last_message && msg.id.id === last_message.id.id) {
-                    revoked_msg = new Message(this, last_message);
-                }
-
+                
                 /**
                  * Emitted when a message is deleted for everyone in the chat.
                  * @event Client#message_revoke_everyone
                  * @param {Message} message The message that was revoked, in its current state. It will not contain the original message's data.
-                 * @param {?Message} revoked_msg The message that was revoked, before it was revoked. It will contain the message's original data. 
+                 * @param {Object} revokedMsgId The message ID that was revoked, before it was revoked. It will contain the ID of an original  message.
                  * Note that due to the way this data is captured, it may be possible that this param will be undefined.
                  */
-                this.emit(Events.MESSAGE_REVOKED_EVERYONE, message, revoked_msg);
+                this.emit(Events.MESSAGE_REVOKED_EVERYONE, message, revokedMsgId);
             }
 
         });
@@ -698,7 +693,7 @@ class Client extends EventEmitter {
 
         await page.evaluate(() => {
             window.Store.Msg.on('change', (msg) => { window.onChangeMessageEvent(window.WWebJS.getMessageModel(msg)); });
-            window.Store.Msg.on('change:type', (msg) => { window.onChangeMessageTypeEvent(window.WWebJS.getMessageModel(msg)); });
+            window.Store.Msg.on('change:type', (msg) => { window.onChangeMessageTypeEvent(window.WWebJS.getMessageModel(msg), msg.protocolMessageKey); });
             window.Store.Msg.on('change:ack', (msg, ack) => { window.onMessageAckEvent(window.WWebJS.getMessageModel(msg), ack); });
             window.Store.Msg.on('change:isUnsentMedia', (msg, unsent) => { if (msg.id.fromMe && !unsent) window.onMessageMediaUploadedEvent(window.WWebJS.getMessageModel(msg)); });
             window.Store.Msg.on('remove', (msg) => { if (msg.isNewMsg) window.onRemoveMessageEvent(window.WWebJS.getMessageModel(msg)); });

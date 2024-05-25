@@ -315,11 +315,11 @@ declare namespace WAWebJS {
         on(event: 'message_revoke_everyone', listener: (
             /** The message that was revoked, in its current state. It will not contain the original message's data */
             message: Message,
-            /**The message that was revoked, before it was revoked. 
-             * It will contain the message's original data. 
-             * Note that due to the way this data is captured, 
-             * it may be possible that this param will be undefined. */
-            revoked_msg?: Message | null
+            /**
+             * The message ID that was revoked, before it was revoked.
+             * It will contain the ID of an original  message.
+             */
+            revokedMsgId?: Object | null
         ) => void): this
 
         /** Emitted when a message is deleted by the current user */
