@@ -24,7 +24,7 @@ exports.LoadUtils = () => {
     };
 
     window.WWebJS.sendMessage = async (chat, content, options = {}) => {
-        const isChannel = chat.isNewsletter;
+        const isChannel = /@\w*newsletter\b/.test(chat.id);
 
         let mediaOptions = {};
         if (options.media) {
@@ -527,7 +527,7 @@ exports.LoadUtils = () => {
         model.isGroup = chat.isGroup;
         model.isMuted = chat.mute && chat.mute.isMuted;
         if (isChannel) {
-            model.isChannel = chat.isNewsletter;
+            model.isChannel = isChannel;
         } else {
             model.formattedTitle = chat.formattedTitle;
         }
